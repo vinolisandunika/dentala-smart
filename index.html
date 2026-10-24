@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f766e">
+<title>歯科助手トレーニング</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+margin: 0;
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+background: #f1f5f9;
+color: #1e293b;
+}
+
+header {
+background: #0f766e;
+color: white;
+padding: 16px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+position: sticky;
+top: 0;
+z-index: 2;
+}
+
+header h1 { font-size: 18px; margin: 0; }
+button { cursor: pointer; font: inherit; }
+
+.icon-btn {
+background: transparent;
+color: white;
+border: 0;
+font-size: 22px;
+}
+
+main {
+width: min(100%, 760px);
+margin: auto;
+padding: 16px 16px 90px;
+}
+
+.card {
+background: white;
+padding: 18px;
+border-radius: 16px;
+margin-bottom: 16px;
+box-shadow: 0 2px 8px #0f172a0a;
+}
+
+.profile {
+display: flex;
+gap: 16px;
+align-items: center;
+}
+
+.avatar {
+width: 68px;
+height: 68px;
+border-radius: 50%;
+background: #ccfbf1;
+display: grid;
+place-items: center;
+font-size: 32px;
+}
+
+h2 { font-size: 20px; margin: 0 0 14px; }
+h3 { font-size: 17px; margin-top: 16px; color: #0f766e; }
+p { line-height: 1.7; }
+
+.muted { color: #64748b; font-size: 14px; }
+
+.task {
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 13px 0;
+border-bottom: 1px solid #e2e8f0;
+}
+
+.task input {
+width: 21px;
+height: 21px;
+accent-color: #0f766e;
+}
+
+.task label { flex: 1; cursor: pointer; }
+
+.task.done label {
+color: #64748b;
+text-decoration: line-through;
+}
+
+.primary, .secondary {
+width: 100%;
+border: 0;
+border-radius: 10px;
+padding: 13px 16px;
+margin-top: 12px;
+font-weight: 600;
+}
+
+.primary { background: #0f766e; color: white; }
+.secondary { background: #ccfbf1; color: #115e59; }
+
+.back {
+border: 0;
+background: transparent;
+color: #0f766e;
+padding: 0 0 16px;
+font-weight: bold;
+}
+
+.step {
+padding: 12px;
+background: #f8fafc;
+border-radius: 8px;
+margin: 8px 0;
+line-height: 1.6;
+}
+
+.warning {
+background: #fff7ed;
+border-left: 4px solid #f59e0b;
+padding: 12px;
+border-radius: 8px;
+margin: 10px 0;
+}
+
+.video-box {
+background: #0f172a;
+color: white;
+aspect-ratio: 16 / 9;
+display: grid;
+place-items: center;
+border-radius: 12px;
+text-align: center;
+padding: 16px;
+margin-bottom: 14px;
+}
+
+.play { font-size: 48px; }
+
+nav {
+position: fixed;
+bottom: 0;
+left: 0;
+right: 0;
+background: white;
+border-top: 1px solid #e2e8f0;
+display: flex;
+justify-content: space-around;
+padding: 10px 4px;
+padding-bottom: max(10px, env(safe-area-inset-bottom));
+z-index: 3;
+}
+
+nav button {
+background: transparent;
+border: 0;
+color: #64748b;
+padding: 6px 10px;
+font-size: 13px;
+}
+
+nav button.active {
+color: #0f766e;
+font-weight: bold;
+}
+
+.hidden { display: none !important; }
+
+@media (min-width: 600px) {
+main { padding-top: 24px; }
+.card { padding: 24px; }
+}
+</style>
+</head>
+<body>
+<header>
+<button class="icon-btn" onclick="showPage('home')" aria-label="ホーム">☰</button>
+<h1>歯科助手トレーニング</h1>
+<button class="icon-btn" onclick="showSettings()" aria-label="設定">⚙</button>
+</header>
+
+<main>
+<!-- HOME / CHECKLIST -->
+<section id="home">
+<div class="card profile">
+<div class="avatar">👤</div>
+<div>
+<h2>安田 彩花</h2>
+<div>職種：歯科助手</div>
+<p class="muted">トレーニングマニュアル・チェックリスト</p>
+</div>
+</div>
+
+<div class="card">
+<h2>今日のチェックリスト</h2>
+<p class="muted" id="today"></p>
+<p id="progress">完了 0 / 7</p>
+
+<div class="task" id="row-0">
+<input type="checkbox" id="task-0" onchange="updateTask(0)">
+<label for="task-0">1. サーバ電源・分電盤の立ち上げ</label>
+</div>
+
+<div class="task" id="row-1">
+<input type="checkbox" id="task-1" onchange="updateTask(1)">
+<label for="task-1">2. 診察室の準備（自動計算機・各機器電源）</label>
+</div>
+
+<div class="task" id="row-2">
+<input type="checkbox" id="task-2" onchange="updateTask(2)">
+<label for="task-2">3. 新規患者登録・問診票の入力</label>
+</div>
+
+<div class="task" id="row-3">
+<input type="checkbox" id="task-3" onchange="updateTask(3)">
+<label for="task-3">4. 保険証の変更・確認・OCR読取</label>
+</div>
+
+<div class="task" id="row-4">
+<input type="checkbox" id="task-4" onchange="updateTask(4)">
+<label for="task-4">5. 各種発行・診察券・パンフレットお渡し</label>
+</div>
+
+<div class="task" id="row-5">
+<input type="checkbox" id="task-5" onchange="updateTask(5)">
+<label for="task-5">6. 器具の滅菌・消毒（超音波・オートクレーブ）</label>
+</div>
+
+<div class="task" id="row-6">
+<input type="checkbox" id="task-6" onchange="updateTask(6)">
+<label for="task-6">7. CR治療前の準備・基本の流れ</label>
+</div>
+
+<button class="primary" onclick="showPage('detail')">
+マニュアル詳細・手順を見る ➜
+</button>
+</div>
+</section>
+
+<!-- TASK DETAILS -->
+<section id="detail" class="hidden">
+<button class="back" onclick="showPage('home')">← 戻る</button>
+
+<div class="card">
+<h2>マニュアル詳細・業務手順</h2>
+
+<h3>1. 立ち上げ・診察室の準備</h3>
+<div class="step">
+<strong>電源オンの手順：</strong><br>
+1. 既成の下の大きいサーバー電源ON<br>
+2. 大きいサーバーの上のサーバー電源ON<br>
+3. 小さいサーバー電源ON<br>
+4. 受付画面の電源ON（パレット）<br>
+5. 受付業務：受付機になっているか確認、ネット予約（3ヶ月以内ネット予約可能、それ以外は受付かTELのみ）
+</div>
+<div class="step">
+自動計算機立ち上げ（脇・1,2,5,3,2,0,0）：右の横のカバーを開けてスイッチON。「診療の画面」になるまで待つ。
+</div>
+<div class="step">
+<strong>朝の準備リスト：</strong><br>
+- レントゲン室パソコン電源ON<br>
+- 器具準備・主要電源立ち上げ<br>
+- 補綴機・テレビ電源ON<br>
+- 吸入シャッター開ける<br>
+- 空気清浄機にアロマを入れて電源ON<br>
+- プリンターの用紙があるか確認
+</div>
+
+<h3>2. 会計・患者登録</h3>
+<div class="step">
+<strong>患者来院・管理：</strong><br>
+パレットに上下の診察券番号を入力。保険証確認ができたら必ず保険証を出してもらう（写真追加）。カルテを回す。歯科診療器具を立てる。中に入れたら上に送迎・圧入。
+</div>
+<div class="step">
+<strong>新規患者登録：</strong><br>
+問診票を記入してもらう。お薬手帳確認・保険証確認（あれば受給資格証）を預かる。F4 → スキャナー1に保険証をセットし右上の角に突き当て、F11（保険証OCR）→ OK。読み込み完了したら必要情報の入力画面で正しいか確認、誤っていれば入力する。
+</div>
+
+<h3>3. CR治療前の準備・基本の流れ</h3>
+<div class="step">
+<strong>CR処置前（基本）：</strong><br>
+- 虫歯に近い場合はデンキャッキャ（D CAVIOUS）を使用する、その後光照射を行う。<br>
+- 虫歯がない場合はHOT POIC準備。虫歯がある場合はNORMAL POIC準備。<br>
+- ボンディング使用時：ライトの光量を少なくして光を照射する。<br>
+- ハイトップ（PIC）やガン（GUN）などの指定用具を渡す。<br>
+- 電動機（プラスチックインスツルメント等）や各種ノズル（ノーマル、うがい等）を準備。
+</div>
+
+<div class="warning">
+⚠️ <strong>注意事項：</strong><br>
+針や鋭利な器具の取り扱いに十分注意すること。実際の手順は医院の感染対策マニュアルと指導者の指示に従ってください。
+</div>
+
+<button class="primary" onclick="showPage('video')">
+🎥 解説動画を再生する
+</button>
+
+<button class="secondary" onclick="showPage('home')">
+☑ チェックリストに戻る
+</button>
+</div>
+</section>
+
+<!-- VIDEO -->
+<section id="video" class="hidden">
+<button class="back" onclick="showPage('detail')">← 戻る</button>
+
+<div class="card">
+<h2>解説動画</h2>
+
+<div class="video-box" id="videoBox">
+<div>
+<div class="play">▶</div>
+<p>トレーニング動画（準備・滅菌・CR処置）</p>
+</div>
+</div>
+
+<h3>動画タイトル：歯科助手業務・滅菌・CR治療準備手順</h3>
+<p>説明：</p>
+<p>サーバー立ち上げから受付、保険証OCR読み込み、器具の滅菌・消毒、およびCR治療前の基本準備の流れを確認するためのトレーニング動画です。</p>
+
+<button class="primary" onclick="showPage('home')">
+☑ 確認完了してホームに戻る
+</button>
+</div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="hidden">
+<button class="back" onclick="showPage('home')">← 戻る</button>
+<div class="card">
+<h2>設定</h2>
+<p>歯科助手トレーニングアプリ</p>
+<p class="muted">
+この試作版では、チェック状況はこのブラウザ内に保存されます。
+</p>
+<button class="secondary" onclick="resetTasks()">
+チェックリストをリセット
+</button>
+</div>
+</section>
+</main>
+
+<nav>
+<button id="nav-home" class="active" onclick="showPage('home')">🏠 ホーム</button>
+<button id="nav-detail" onclick="showPage('detail')">📋 マニュアル</button>
+<button id="nav-video" onclick="showPage('video')">🎥 動画</button>
+</nav>
+
+<script>
+const pages = ['home', 'detail', 'video', 'settings'];
+const totalTasks = 7;
+let completed = Array(totalTasks).fill(false);
+
+// Today's date
+document.getElementById('today').textContent =
+new Intl.DateTimeFormat('ja-JP', {
+year: 'numeric', month: '2-digit', day: '2-digit'
+}).format(new Date());
+
+function showPage(page) {
+pages.forEach(name => {
+document.getElementById(name).classList.toggle(
+'hidden', name !== page
+);
+});
+
+['home', 'detail', 'video'].forEach(name => {
+const btn = document.getElementById('nav-' + name);
+if (btn) btn.classList.toggle('active', name === page);
+});
+
+window.scrollTo(0, 0);
+}
+
+function updateTask(index) {
+completed[index] = document.getElementById('task-' + index).checked;
+renderTasks();
+}
+
+function renderTasks() {
+completed.forEach((done, index) => {
+const checkbox = document.getElementById('task-' + index);
+const row = document.getElementById('row-' + index);
+if (checkbox) checkbox.checked = done;
+if (row) row.classList.toggle('done', done);
+});
+
+const count = completed.filter(Boolean).length;
+document.getElementById('progress').textContent =
+`完了 ${count} / ${totalTasks}`;
+}
+
+function resetTasks() {
+completed = Array(totalTasks).fill(false);
+renderTasks();
+showPage('home');
+}
+
+function showSettings() {
+showPage('settings');
+}
+
+renderTasks();
+</script>
+</body>
+</html>

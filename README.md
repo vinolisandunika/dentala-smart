@@ -1,1 +1,0 @@
-# dentala-smart
